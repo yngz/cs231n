@@ -1,3 +1,3 @@
 # cs231n
 
-http://cs231n.stanford.edu/2017/
+http://cs231n.stanford.edu/2019/
