@@ -36,13 +36,17 @@ def svm_loss_naive(W, X, y, reg):
             margin = scores[j] - correct_class_score + 1 # note delta = 1
             if margin > 0:
                 loss += margin
+                dW[:, y[i]] += -X[i] # the row corresponding to the correct class
+                dW[:, j] += X[i] # the other rows
 
     # Right now the loss is a sum over all training examples, but we want it
     # to be an average instead so we divide by num_train.
     loss /= num_train
+    dW /= num_train
 
     # Add regularization to the loss.
     loss += reg * np.sum(W * W)
+    dW += 2 * reg * W # derivative of the L2 regularization loss
 
     #############################################################################
     # TODO:                                                                     #
@@ -54,7 +58,7 @@ def svm_loss_naive(W, X, y, reg):
     #############################################################################
     # *****START OF YOUR CODE (DO NOT DELETE/MODIFY THIS LINE)*****
 
-    pass
+    # the gradient and the loss are computed at the same time in the loop above.
 
     # *****END OF YOUR CODE (DO NOT DELETE/MODIFY THIS LINE)*****
     
@@ -78,7 +82,17 @@ def svm_loss_vectorized(W, X, y, reg):
     #############################################################################
     # *****START OF YOUR CODE (DO NOT DELETE/MODIFY THIS LINE)*****
 
-    pass
+    num_train = X.shape[0]
+    num_classes = W.shape[1]
+    scores = X.dot(W) # (N, C)
+    correct_class_scores = scores[range(num_train), y].reshape(-1,1) # (N, 1)
+
+    margins = scores - correct_class_scores + 1
+    margins = margins.clip(min=0)
+    margins[range(num_train), y] = 0 # ignore correct class terms in the sum
+    
+    loss = np.sum(margins) / num_train
+    loss += reg * np.sum(W * W)
 
     # *****END OF YOUR CODE (DO NOT DELETE/MODIFY THIS LINE)*****
 
@@ -93,7 +107,13 @@ def svm_loss_vectorized(W, X, y, reg):
     #############################################################################
     # *****START OF YOUR CODE (DO NOT DELETE/MODIFY THIS LINE)*****
 
-    pass
+    margins[margins > 0] = 1
+    # 0 minus the number of classes that have a positive margin (loss)
+    margins[range(num_train), y] -= np.sum(margins, axis=1)
+
+    dW = X.T.dot(margins)
+    dW /= num_train
+    dW += 2 * reg * W
 
     # *****END OF YOUR CODE (DO NOT DELETE/MODIFY THIS LINE)*****
 
