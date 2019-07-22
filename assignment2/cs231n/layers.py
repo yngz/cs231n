@@ -80,13 +80,12 @@ def relu_forward(x):
     - out: Output, of the same shape as x
     - cache: x
     """
-    out = None
     ###########################################################################
     # TODO: Implement the ReLU forward pass.                                  #
     ###########################################################################
     # *****START OF YOUR CODE (DO NOT DELETE/MODIFY THIS LINE)*****
 
-    pass
+    out = np.maximum(x, 0) # element-wise max
 
     # *****END OF YOUR CODE (DO NOT DELETE/MODIFY THIS LINE)*****
     ###########################################################################
